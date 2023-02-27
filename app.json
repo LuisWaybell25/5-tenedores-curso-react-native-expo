@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ff0f4683-a180-41a1-b0ce-4daec843a401"
+      }
+    },
+    "owner": "luis_waybell25"
   }
 }
