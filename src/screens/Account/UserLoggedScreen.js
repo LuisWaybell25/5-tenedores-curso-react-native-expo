@@ -1,10 +1,10 @@
-import { StyleSheet, View, Text } from 'react-native'
 import React from 'react'
+import { View, StyleSheet, Text } from 'react-native';
 
-const SearchScreen = () => {
+const UserLoggedScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>SearchScreen</Text>
+      <Text>UserLoggedScreen</Text>
     </View>
   )
 }
@@ -16,4 +16,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchScreen
+export default UserLoggedScreen
