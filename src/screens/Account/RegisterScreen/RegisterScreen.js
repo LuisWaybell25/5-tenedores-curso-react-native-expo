@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, ScrollView, Image, Pressable, KeyboardAvoidingView } from 'react-native';
-import { Text, Icon, Input, FormControl, WarningOutlineIcon } from 'native-base';
+import { HStack, Text, Icon, Input, FormControl, WarningOutlineIcon, Button, Spinner } from 'native-base';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { screen } from '../../../utils/screenNames';
@@ -8,6 +8,11 @@ import { screen } from '../../../utils/screenNames';
 import { useNavigation } from '@react-navigation/native'
 
 import { useFormik } from 'formik';
+
+
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+import { Modal } from "native-base";
 
 import * as Yup from 'yup';
 
@@ -18,6 +23,8 @@ const RegisterScreen = () => {
   const goToLogin = () => {
     navigation.navigate(screen.account.login);
   }
+
+  const [showModal, setShowModal] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -32,14 +39,25 @@ const RegisterScreen = () => {
     }),
     validateOnChange: false,
     validateOnBlur: true,
-    onSubmit: values => {
-      console.log(values);
+    onSubmit: async formValues => {
+      console.log('clicked');
+      setShowModal(true);
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, formValues.email, formValues.password)
+      .then((userCredential) => {
+        navigation.navigate(screen.account.login);
+        setShowModal(false);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
     },
   });
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} style={styles.container}>
-       <Image source={require('../../../../assets/img/5-tenedores-letras-icono-logo.png')} alt="user-guest" style={styles.image}/>
+      <Image source={require('../../../../assets/img/5-tenedores-letras-icono-logo.png')} alt="user-guest" style={styles.image}/>
 
       <FormControl 
         isInvalid={formik.errors.email}
@@ -103,11 +121,27 @@ const RegisterScreen = () => {
       <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{formik.errors.confirmPassword}</FormControl.ErrorMessage>
       </FormControl>
 
-      <Pressable style={styles.button} onPress={formik.handleSubmit}>
-        <Text style={styles.textButton}>Sing Up</Text>
-      </Pressable>
+      <Button 
+        style={styles.button} 
+        onPress={formik.handleSubmit}>
+        Button
+      </Button>
 
        <Text mt="5">Al ready have an account? <Text style={styles.innerTextBold} onPress={goToLogin}>Sign In</Text></Text>
+    
+       <Modal isOpen={showModal}>
+        <Modal.Content maxWidth="400px">
+          <Modal.Header>Registarando usuario</Modal.Header>
+          <Modal.Body>
+          <HStack space={2}>
+            <Spinner accessibilityLabel="Loading posts" />
+            <Text fontSize="md">
+              Espere por favor..
+            </Text>
+          </HStack>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
     </ScrollView>
   )
 }
